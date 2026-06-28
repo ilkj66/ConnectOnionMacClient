@@ -34,7 +34,13 @@ class AppViewModel: ObservableObject {
     }
     
     private func loadDemoData() {
-        let config = AgentConfiguration(name: "Demo Agent", agentAddress: "0x123456789", relayURL: "wss://relay.connectonion.com")
+        let config = AgentConfiguration(
+            name: "Demo Agent",
+            apiKey: "",
+            baseURL: "https://api.openai.com/v1",
+            model: "gpt-4o-mini",
+            systemPrompt: "You are a helpful assistant."
+        )
         configurations.append(config)
         
         let session = ChatSession(agentConfigId: config.id, title: "Welcome Chat")
@@ -116,17 +122,9 @@ class ChatViewModel: ObservableObject {
         
         Task {
             if !service.isConnected {
-                await service.connect(to: configuration.agentAddress, relayURL: configuration.relayURL)
+                service.connect(with: configuration)
             }
-            await service.sendMessage(textToSend, to: configuration.agentAddress)
-            
-            // Fallback demo response if service is not really running
-            try? await Task.sleep(nanoseconds: 1_500_000_000)
-            if self.isAgentTyping {
-                let response = ChatMessage(sessionId: self.session.id, role: .agent, content: "Echo: \(textToSend)")
-                self.messages.append(response)
-                self.isAgentTyping = false
-            }
+            await service.sendMessage(textToSend, using: configuration)
         }
     }
 }

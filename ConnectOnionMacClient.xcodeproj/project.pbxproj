@@ -15,6 +15,7 @@
 		AA0000062FEBF5F6009B8B1C /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A6162B2FEBF5F6009B8B1C /* ChatView.swift */; };
 		AA0000072FEBF5F6009B8B1C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A6162C2FEBF5F6009B8B1C /* ContentView.swift */; };
 		AA0000082FEBF5F6009B8B1C /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A6162D2FEBF5F6009B8B1C /* SidebarView.swift */; };
+		AA0000092FEBF5F6009B8B1C /* ConnectOnion in Frameworks */ = {isa = PBXBuildFile; productRef = AA00000B2FEBF5F6009B8B1C /* ConnectOnion */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +36,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA0000092FEBF5F6009B8B1C /* ConnectOnion in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -98,6 +100,7 @@
 			);
 			name = ConnectOnionMacClient;
 			packageProductDependencies = (
+				AA00000B2FEBF5F6009B8B1C /* ConnectOnion */,
 			);
 			productName = ConnectOnionMacClient;
 			productReference = 34A616162FEBF5C6009B8B1C /* ConnectOnionMacClient.app */;
@@ -127,6 +130,9 @@
 			);
 			mainGroup = 34A6160D2FEBF5C6009B8B1C;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				AA00000A2FEBF5F6009B8B1C /* XCRemoteSwiftPackageReference "connectonion-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 34A616172FEBF5C6009B8B1C /* Products */;
 			projectDirPath = "";
@@ -294,6 +300,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -324,6 +331,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -366,6 +374,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		AA00000A2FEBF5F6009B8B1C /* XCRemoteSwiftPackageReference "connectonion-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/openonion/connectonion-swift.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AA00000B2FEBF5F6009B8B1C /* ConnectOnion */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AA00000A2FEBF5F6009B8B1C /* XCRemoteSwiftPackageReference "connectonion-swift" */;
+			productName = ConnectOnion;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 34A6160E2FEBF5C6009B8B1C /* Project object */;
 }

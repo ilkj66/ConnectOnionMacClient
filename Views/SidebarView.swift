@@ -21,7 +21,13 @@ struct SidebarView: View {
                 }
                 
                 Button(action: {
-                    let newConfig = AgentConfiguration(name: "New Agent", agentAddress: "", relayURL: "wss://relay.connectonion.com")
+                    let newConfig = AgentConfiguration(
+                        name: "New Agent",
+                        apiKey: "",
+                        baseURL: "https://api.openai.com/v1",
+                        model: "gpt-4o-mini",
+                        systemPrompt: "You are a helpful assistant."
+                    )
                     appViewModel.configurations.append(newConfig)
                     appViewModel.selection = .configuration(newConfig.id)
                 }) {
