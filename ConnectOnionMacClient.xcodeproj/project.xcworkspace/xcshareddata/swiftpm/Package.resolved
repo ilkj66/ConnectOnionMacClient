@@ -1,0 +1,15 @@
+{
+  "originHash" : "bac13a7d23b7fc73b33e782ac5e9d67f92be4524f09ad1d182c0179f3c1ab112",
+  "pins" : [
+    {
+      "identity" : "connectonion-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/openonion/connectonion-swift.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "353f41198ae7b4a065d0387b6915f9ebbf6162ed"
+      }
+    }
+  ],
+  "version" : 3
+}

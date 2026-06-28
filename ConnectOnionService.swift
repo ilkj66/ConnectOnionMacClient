@@ -1,90 +1,68 @@
-import Foundation
 import Combine
+import ConnectOnion
+import Foundation
 
-/// A starter service for connecting to a ConnectOnion agent via WebSockets using async/await
 @MainActor
 class ConnectOnionService: ObservableObject {
-    private var webSocketTask: URLSessionWebSocketTask?
-    private var session: URLSession
-    private var receiveTask: Task<Void, Never>?
-    
+    private var agent: Agent?
+    private var currentConfiguration: AgentConfiguration?
+
     @Published var isConnected: Bool = false
     @Published var connectionError: String? = nil
-    
-    // Subject for receiving incoming messages from the agent
+
     let incomingMessages = PassthroughSubject<String, Never>()
-    
-    init() {
-        self.session = URLSession(configuration: .default)
-    }
-    
-    func connect(to agentAddress: String, relayURL: String) async {
-        guard let url = URL(string: relayURL) else {
-            self.connectionError = "Invalid Relay URL"
+
+    func connect(with configuration: AgentConfiguration) {
+        guard !configuration.apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            connectionError = "Missing API key"
+            isConnected = false
             return
         }
-        
-        var request = URLRequest(url: url)
-        // In a real implementation, you would add required headers or auth for ConnectOnion
-        
-        webSocketTask = session.webSocketTask(with: request)
-        webSocketTask?.resume()
-        
-        self.isConnected = true
-        self.connectionError = nil
-        
-        startReceiving()
-    }
-    
-    func disconnect() {
-        receiveTask?.cancel()
-        webSocketTask?.cancel(with: .goingAway, reason: nil)
-        self.isConnected = false
-    }
-    
-    func sendMessage(_ message: String, to agentAddress: String) async {
-        let payload: [String: Any] = [
-            "target_address": agentAddress,
-            "action": "input",
-            "data": message
-        ]
-        
-        guard let data = try? JSONSerialization.data(withJSONObject: payload),
-              let stringData = String(data: data, encoding: .utf8) else { return }
-        
-        let wsMessage = URLSessionWebSocketTask.Message.string(stringData)
-        
-        do {
-            try await webSocketTask?.send(wsMessage)
-        } catch {
-            self.connectionError = "Failed to send: \(error.localizedDescription)"
+
+        guard let baseURL = URL(string: configuration.baseURL) else {
+            connectionError = "Invalid base URL"
+            isConnected = false
+            return
         }
+
+        let client = OpenAIClient(
+            config: .init(
+                apiKey: configuration.apiKey,
+                model: configuration.model,
+                baseURL: baseURL
+            )
+        )
+
+        agent = Agent(
+            name: configuration.name,
+            llm: client,
+            model: configuration.model,
+            systemPrompt: configuration.systemPrompt.isEmpty ? nil : configuration.systemPrompt
+        )
+        currentConfiguration = configuration
+        connectionError = nil
+        isConnected = true
     }
-    
-    private func startReceiving() {
-        receiveTask?.cancel()
-        receiveTask = Task {
-            while let task = webSocketTask, !Task.isCancelled {
-                do {
-                    let message = try await task.receive()
-                    switch message {
-                    case .string(let text):
-                        incomingMessages.send(text)
-                    case .data(let data):
-                        if let text = String(data: data, encoding: .utf8) {
-                            incomingMessages.send(text)
-                        }
-                    @unknown default:
-                        break
-                    }
-                } catch {
-                    if !Task.isCancelled {
-                        self.isConnected = false
-                        self.connectionError = "Disconnected: \(error.localizedDescription)"
-                    }
-                    break
-                }
-            }
+
+    func disconnect() {
+        agent = nil
+        currentConfiguration = nil
+        isConnected = false
+    }
+
+    func sendMessage(_ message: String, using configuration: AgentConfiguration) async {
+        if agent == nil || currentConfiguration != configuration {
+            connect(with: configuration)
+        }
+
+        guard let agent else { return }
+
+        do {
+            let response = try await agent.input(message)
+            incomingMessages.send(response)
+        } catch {
+            connectionError = error.localizedDescription
+            incomingMessages.send("Error: \(error.localizedDescription)")
         }
     }
 }

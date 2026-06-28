@@ -8,8 +8,11 @@ struct AgentSettingsView: View {
         Form {
             Section(header: Text("Agent Configuration")) {
                 TextField("Name", text: $configuration.name)
-                TextField("Agent Address", text: $configuration.agentAddress)
-                TextField("Relay URL", text: $configuration.relayURL)
+                SecureField("API Key", text: $configuration.apiKey)
+                TextField("Base URL", text: $configuration.baseURL)
+                TextField("Model", text: $configuration.model)
+                TextField("System Prompt", text: $configuration.systemPrompt, axis: .vertical)
+                    .lineLimit(3...6)
             }
             
             Button("Save Configuration") {

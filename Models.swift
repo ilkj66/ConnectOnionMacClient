@@ -3,8 +3,10 @@ import Foundation
 struct AgentConfiguration: Identifiable, Codable, Hashable {
     var id: UUID = UUID()
     var name: String
-    var agentAddress: String
-    var relayURL: String
+    var apiKey: String
+    var baseURL: String
+    var model: String
+    var systemPrompt: String
     var isConnected: Bool = false
 }
 
